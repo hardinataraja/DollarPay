@@ -1,0 +1,16 @@
+{
+  "name": "DollarPay Wallet",
+  "short_name": "DollarPay",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#228B22",
+  "theme_color": "#228B22",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2529/2529396.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
