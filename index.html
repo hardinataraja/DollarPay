@@ -18,10 +18,8 @@
     <style>
         .bg-dollar-green { background-color: #228B22; }
         .text-dollar-green { color: #228B22; }
-        .border-dollar-green { border-color: #228B22; }
-        body { background-color: #f4f7f6; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        #qrcode img { margin: 0 auto; border: 10px solid white; border-radius: 10px; }
-        .nav-active { color: #228B22; font-weight: bold; }
+        body { background-color: #f4f7f6; font-family: 'Inter', sans-serif; }
+        #qrcode img { margin: 0 auto; border: 8px solid white; border-radius: 12px; }
     </style>
 </head>
 <body class="max-w-md mx-auto shadow-2xl min-h-screen pb-24 bg-white relative">
@@ -41,180 +39,132 @@
     <main class="px-6">
         <div class="bg-dollar-green rounded-3xl p-8 text-white shadow-xl relative overflow-hidden mb-6">
             <div class="absolute -right-10 -top-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
-            
             <p class="text-sm opacity-80 mb-1">Total Saldo USDT (Polygon)</p>
             <h2 id="balanceText" class="text-4xl font-bold mb-2">$ 0.00</h2>
             <p id="walletAddressDisplay" onclick="copyAddress()" class="text-[10px] opacity-60 break-all cursor-pointer bg-black bg-opacity-20 p-2 rounded-lg hover:bg-opacity-30 transition-all font-mono"></p>
             
             <div class="flex gap-4 mt-6">
-                <button onclick="openTransak('BUY')" class="flex-1 bg-white text-dollar-green font-bold py-3 rounded-2xl flex items-center justify-center gap-2 hover:bg-gray-100 transition-all active:scale-95">
+                <button onclick="openTransak('BUY')" class="flex-1 bg-white text-dollar-green font-bold py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all">
                     <i class="fa-solid fa-plus-circle"></i> Top Up
                 </button>
-                <button onclick="openTransak('SELL')" class="flex-1 bg-green-900 bg-opacity-30 border border-white border-opacity-30 text-white font-bold py-3 rounded-2xl flex items-center justify-center gap-2 hover:bg-opacity-40 transition-all active:scale-95">
+                <button onclick="openTransak('SELL')" class="flex-1 bg-green-900 bg-opacity-30 border border-white border-opacity-30 text-white font-bold py-3 rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all">
                     <i class="fa-solid fa-wallet"></i> Withdraw
                 </button>
             </div>
         </div>
 
-        <div id="qrContainer" class="hidden bg-white p-6 rounded-3xl shadow-inner text-center mb-6 border-2 border-dashed border-gray-200 animate-fade-in">
-            <p class="text-sm font-bold text-gray-600 mb-4">Scan untuk kirim ke dompet ini</p>
+        <div id="qrContainer" class="hidden bg-gray-50 p-6 rounded-3xl text-center mb-6 border-2 border-dashed border-gray-200">
+            <p class="text-sm font-bold text-gray-600 mb-4">Scan QR untuk Terima Saldo</p>
             <div id="qrcode" class="flex justify-center"></div>
-            <button onclick="toggleQR()" class="mt-4 text-xs text-red-500 font-bold uppercase tracking-wider">Tutup</button>
+            <button onclick="toggleQR()" class="mt-4 text-xs text-red-500 font-bold">TUTUP</button>
         </div>
 
-        <div class="grid grid-cols-4 gap-4 mt-4">
+        <div class="grid grid-cols-4 gap-4">
             <div class="flex flex-col items-center gap-2">
-                <button onclick="toggleQR()" class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green hover:shadow-md transition-all">
+                <button onclick="toggleQR()" class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green hover:shadow-md">
                     <i class="fa-solid fa-qrcode"></i>
                 </button>
                 <span class="text-[10px] text-gray-500">QR Code</span>
             </div>
             <div class="flex flex-col items-center gap-2">
-                <button onclick="refreshBalance()" class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green hover:shadow-md transition-all">
+                <button onclick="refreshBalance()" class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green hover:shadow-md">
                     <i class="fa-solid fa-rotate"></i>
                 </button>
                 <span class="text-[10px] text-gray-500">Refresh</span>
             </div>
-            <div class="flex flex-col items-center gap-2">
-                <button onclick="alert('Fitur History segera hadir!')" class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green opacity-50">
+            <div class="flex flex-col items-center gap-2 opacity-40">
+                <button class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                 </button>
                 <span class="text-[10px] text-gray-500">History</span>
             </div>
             <div class="flex flex-col items-center gap-2">
-                <button onclick="showKey()" class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green hover:shadow-md transition-all">
+                <button onclick="showKey()" class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green hover:shadow-md">
                     <i class="fa-solid fa-shield-halved"></i>
                 </button>
                 <span class="text-[10px] text-gray-500">Security</span>
             </div>
         </div>
-
-        <div class="mt-10">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-gray-800">Aktivitas Terakhir</h3>
-                <span class="text-dollar-green text-xs font-semibold cursor-pointer">Lihat Semua</span>
-            </div>
-            <div id="activityList" class="space-y-4">
-                <p class="text-center text-xs text-gray-400 py-10 bg-gray-50 rounded-2xl border border-dashed">Belum ada transaksi di jaringan ini.</p>
-            </div>
-        </div>
     </main>
 
-    <nav class="fixed bottom-0 max-w-md w-full bg-white border-t flex justify-around py-4 shadow-lg z-20">
-        <button class="flex flex-col items-center gap-1 nav-active">
+    <nav class="fixed bottom-0 max-w-md w-full bg-white border-t flex justify-around py-4 shadow-lg">
+        <button class="flex flex-col items-center gap-1 text-dollar-green font-bold">
             <i class="fa-solid fa-wallet text-xl"></i>
             <span class="text-[10px]">Wallet</span>
         </button>
-        <button onclick="alert('Fitur Pay (Scan & Pay) akan segera aktif!')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-dollar-green">
+        <button onclick="alert('Fitur Pay segera hadir!')" class="flex flex-col items-center gap-1 text-gray-400">
             <i class="fa-solid fa-receipt text-xl"></i>
             <span class="text-[10px]">Pay</span>
         </button>
-        <button onclick="alert('Halaman Profil sedang dalam pengembangan')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-dollar-green">
+        <button onclick="alert('Halaman Profil sedang dikembangkan')" class="flex flex-col items-center gap-1 text-gray-400">
             <i class="fa-solid fa-user-gear text-xl"></i>
             <span class="text-[10px]">Profil</span>
         </button>
     </nav>
 
     <script>
-        // --- CONFIGURATION ---
         const ALCHEMY_URL = "https://polygon-mainnet.g.alchemy.com/v2/EESu3FuMWWr61K6o6G5cy"; 
         const USDT_CONTRACT = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
-        // Ganti dengan API Key Live kamu jika sudah diverifikasi
+        // Masukkan API Key kamu di bawah sini
         let TRANSAK_API_KEY = "6fd30e1e-df60-4337-b34a-ba47e2b86e6a"; 
 
         let wallet;
         const provider = new ethers.JsonRpcProvider(ALCHEMY_URL);
 
-        // --- INITIALIZATION ---
         function initWallet() {
             let savedKey = localStorage.getItem('dollarpay_private_key');
-            if (savedKey) {
-                wallet = new ethers.Wallet(savedKey, provider);
-            } else {
+            if (!savedKey) {
                 const newWallet = ethers.Wallet.createRandom();
                 localStorage.setItem('dollarpay_private_key', newWallet.privateKey);
-                wallet = new ethers.Wallet(newWallet.privateKey, provider);
+                savedKey = newWallet.privateKey;
             }
+            wallet = new ethers.Wallet(savedKey, provider);
             document.getElementById('walletAddressDisplay').innerText = wallet.address;
             
-            // Clear existing QR if any then Generate
             document.getElementById("qrcode").innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), {
-                text: wallet.address,
-                width: 180,
-                height: 180,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
-            
+            new QRCode(document.getElementById("qrcode"), { text: wallet.address, width: 160, height: 160 });
             refreshBalance();
         }
 
         async function refreshBalance() {
             const el = document.getElementById('balanceText');
-            el.innerText = "Loading...";
+            el.innerText = "...";
             try {
-                const abi = ["function balanceOf(address) view returns (uint256)"];
-                const contract = new ethers.Contract(USDT_CONTRACT, abi, provider);
+                const contract = new ethers.Contract(USDT_CONTRACT, ["function balanceOf(address) view returns (uint256)"], provider);
                 const balance = await contract.balanceOf(wallet.address);
-                const formatted = ethers.formatUnits(balance, 6);
-                el.innerText = "$ " + parseFloat(formatted).toLocaleString('en-US', {minimumFractionDigits: 2});
-            } catch (e) {
-                console.error("Error fetching balance:", e);
-                el.innerText = "$ 0.00";
-            }
+                el.innerText = "$ " + parseFloat(ethers.formatUnits(balance, 6)).toLocaleString('en-US', {minimumFractionDigits: 2});
+            } catch (e) { el.innerText = "$ 0.00"; }
         }
 
-        function toggleQR() {
-            const container = document.getElementById('qrContainer');
-            container.classList.toggle('hidden');
-        }
+        function toggleQR() { document.getElementById('qrContainer').classList.toggle('hidden'); }
 
         function openTransak(mode) {
-            // FIX: Gunakan USD jika IDR not supported di Staging/Akun Baru
-            // Ubah isLive menjadi true jika akun Transak kamu sudah disetujui
-            const isLive = false; 
-            const baseUrl = isLive ? "https://global.transak.com" : "https://staging-global.transak.com";
+            // Gunakan staging jika belum dapet Live Key yang aktif
+            const isStaging = true; 
+            const baseUrl = isStaging ? "https://staging-global.transak.com" : "https://global.transak.com";
             
             const params = new URLSearchParams({
                 apiKey: TRANSAK_API_KEY,
                 defaultCryptoCurrency: "USDT",
                 network: "polygon",
-                fiatCurrency: "USD", // Gunakan USD dulu agar tidak error fiat not supported
-                walletAddress: wallet.address,
-                themeColor: "228B22"
+                fiatCurrency: "USD", // Pakai USD dulu agar stabil
+                walletAddress: wallet.address
             });
-
-            if (mode === 'SELL') {
-                params.append("productsAvailed", "SELL");
-            }
-            
+            if (mode === 'SELL') params.append("productsAvailed", "SELL");
             window.open(`${baseUrl}?${params.toString()}`, '_blank', 'width=450,height=600');
         }
 
         function copyAddress() {
             navigator.clipboard.writeText(wallet.address);
-            alert("Alamat dompet berhasil disalin ke clipboard!");
+            alert("Alamat disalin!");
         }
 
         function showKey() {
-            const check = prompt("Keamanan: Ketik 'SHOW' (huruf kapital) untuk melihat Private Key dompet Anda.");
-            if(check === 'SHOW') {
-                alert("PRIVATE KEY ANDA (RAHASIA):\n\n" + wallet.privateKey + "\n\nJANGAN berikan kunci ini kepada siapa pun!");
-            }
-        }
-
-        // PWA Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(reg => {
-                    console.log('SW Registered');
-                }).catch(err => console.log('SW Error', err));
-            });
+            if(prompt("Ketik 'SHOW' untuk lihat Private Key:") === 'SHOW') alert("KUNCI RAHASIA:\n" + wallet.privateKey);
         }
 
         window.onload = initWallet;
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
     </script>
 </body>
 </html>
