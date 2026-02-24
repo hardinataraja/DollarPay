@@ -164,6 +164,14 @@
 
         // Jalankan saat load
         window.onload = initWallet;
+        
+        if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("PWA Active!"))
+    .catch((err) => console.log("PWA Error", err));
+        }
     </script>
+    
+    
 </body>
 </html>
