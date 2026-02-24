@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DollarPay Wallet</title>
-    <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#228B22">
-<link rel="apple-touch-icon" href="icon.png">
     
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#228B22">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         .bg-dollar-green { background-color: #228B22; }
         .text-dollar-green { color: #228B22; }
         .border-dollar-green { border-color: #228B22; }
         body { background-color: #f4f7f6; font-family: 'Inter', sans-serif; }
+        #qrcode img { margin: 0 auto; border: 10px solid white; border-radius: 10px; }
     </style>
 </head>
 <body class="max-w-md mx-auto shadow-2xl min-h-screen pb-20 bg-white">
@@ -38,12 +38,12 @@
     </header>
 
     <main class="px-6">
-        <div class="bg-dollar-green rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="bg-dollar-green rounded-3xl p-8 text-white shadow-xl relative overflow-hidden mb-6">
             <div class="absolute -right-10 -top-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
             
             <p class="text-sm opacity-80 mb-1">Total Saldo USDT (Polygon)</p>
             <h2 id="balanceText" class="text-4xl font-bold mb-2">$ 0.00</h2>
-            <p id="walletAddress" onclick="copyAddress()" class="text-[10px] opacity-60 break-all cursor-pointer bg-black bg-opacity-20 p-2 rounded-lg hover:bg-opacity-30 transition-all"></p>
+            <p id="walletAddressDisplay" onclick="copyAddress()" class="text-[10px] opacity-60 break-all cursor-pointer bg-black bg-opacity-20 p-2 rounded-lg hover:bg-opacity-30 transition-all"></p>
             
             <div class="flex gap-4 mt-6">
                 <button onclick="openTransak('BUY')" class="flex-1 bg-white text-dollar-green font-bold py-3 rounded-2xl flex items-center justify-center gap-2 hover:bg-gray-100 transition-all">
@@ -55,9 +55,15 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-4 gap-4 mt-8">
+        <div id="qrContainer" class="hidden bg-white p-6 rounded-3xl shadow-inner text-center mb-6 border-2 border-dashed border-gray-200">
+            <p class="text-sm font-bold text-gray-600 mb-4">Scan untuk kirim USDT</p>
+            <div id="qrcode"></div>
+            <button onclick="toggleQR()" class="mt-4 text-xs text-red-500 font-bold">Tutup QR</button>
+        </div>
+
+        <div class="grid grid-cols-4 gap-4 mt-4">
             <div class="flex flex-col items-center gap-2">
-                <button onclick="copyAddress()" class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green hover:shadow-md">
+                <button onclick="toggleQR()" class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green hover:shadow-md transition-all">
                     <i class="fa-solid fa-qrcode"></i>
                 </button>
                 <span class="text-xs text-gray-500">QR Code</span>
@@ -69,7 +75,7 @@
                 <span class="text-xs text-gray-500">Refresh</span>
             </div>
             <div class="flex flex-col items-center gap-2">
-                <button class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green opacity-50">
+                <button onclick="alert('Fitur segera hadir!')" class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-dollar-green opacity-50">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                 </button>
                 <span class="text-xs text-gray-500">History</span>
@@ -88,7 +94,7 @@
                 <a href="#" class="text-dollar-green text-sm font-semibold">Lihat Semua</a>
             </div>
             <div id="activityList" class="space-y-4">
-                <p class="text-center text-xs text-gray-400">Belum ada transaksi real-time.</p>
+                <p class="text-center text-xs text-gray-400">Hubungkan dompet untuk melihat riwayat.</p>
             </div>
         </div>
     </main>
@@ -98,26 +104,18 @@
             <i class="fa-solid fa-wallet text-xl"></i>
             <p class="text-[10px] mt-1 font-bold">Dompet</p>
         </button>
-        <button class="text-gray-400 hover:text-dollar-green">
-            <i class="fa-solid fa-chart-line text-xl"></i>
-            <p class="text-[10px] mt-1">Market</p>
-        </button>
-        <button class="text-gray-400 hover:text-dollar-green">
-            <i class="fa-solid fa-user text-xl"></i>
-            <p class="text-[10px] mt-1">Profil</p>
-        </button>
+        <button class="text-gray-400"><i class="fa-solid fa-chart-line text-xl"></i></button>
+        <button class="text-gray-400"><i class="fa-solid fa-user text-xl"></i></button>
     </nav>
 
     <script>
-        // --- KONFIGURASI ---
         const ALCHEMY_URL = "https://polygon-mainnet.g.alchemy.com/v2/EESu3FuMWWr61K6o6G5cy"; 
         const USDT_CONTRACT = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
-        const TRANSAK_API_KEY = "4f17845f-4d22-446a-86a0-54e7d70422f2"; // Staging Key
+        let TRANSAK_API_KEY = "4f17845f-4d22-446a-86a0-54e7d70422f2"; 
 
         let wallet;
         const provider = new ethers.JsonRpcProvider(ALCHEMY_URL);
 
-        // --- FUNGSI CORE ---
         function initWallet() {
             let savedKey = localStorage.getItem('dollarpay_private_key');
             if (savedKey) {
@@ -127,37 +125,49 @@
                 localStorage.setItem('dollarpay_private_key', newWallet.privateKey);
                 wallet = new ethers.Wallet(newWallet.privateKey, provider);
             }
-            document.getElementById('walletAddress').innerText = wallet.address;
+            document.getElementById('walletAddressDisplay').innerText = wallet.address;
+            
+            // Generate QR Code tersembunyi
+            new QRCode(document.getElementById("qrcode"), {
+                text: wallet.address,
+                width: 180,
+                height: 180
+            });
+            
             refreshBalance();
         }
 
         async function refreshBalance() {
-            const btn = document.getElementById('balanceText');
-            btn.innerText = "...";
+            const el = document.getElementById('balanceText');
+            el.innerText = "...";
             try {
                 const abi = ["function balanceOf(address) view returns (uint256)"];
                 const contract = new ethers.Contract(USDT_CONTRACT, abi, provider);
                 const balance = await contract.balanceOf(wallet.address);
-                const formatted = ethers.formatUnits(balance, 6);
-                btn.innerText = "$ " + parseFloat(formatted).toLocaleString('en-US', {minimumFractionDigits: 2});
+                el.innerText = "$ " + parseFloat(ethers.formatUnits(balance, 6)).toLocaleString('en-US', {minimumFractionDigits: 2});
             } catch (e) {
-                console.error(e);
-                btn.innerText = "$ 0.00";
+                el.innerText = "$ 0.00";
             }
         }
 
+        function toggleQR() {
+            const container = document.getElementById('qrContainer');
+            container.classList.toggle('hidden');
+        }
+
         function openTransak(mode) {
-            const baseUrl = "https://staging-global.transak.com"; // Ganti 'staging-global' ke 'global' jika sudah live
+            // Jika masih pakai Staging API Key, gunakan USD agar tidak error 'not supported'
+            const fiat = TRANSAK_API_KEY.includes('4f17845f') ? "USD" : "IDR";
+            const baseUrl = TRANSAK_API_KEY.includes('4f17845f') ? "https://staging-global.transak.com" : "https://global.transak.com";
+
             const params = new URLSearchParams({
                 apiKey: TRANSAK_API_KEY,
                 defaultCryptoCurrency: "USDT",
-                cryptoCurrencyList: "USDT",
                 network: "polygon",
-                fiatCurrency: "IDR",
+                fiatCurrency: fiat,
                 walletAddress: wallet.address
             });
             if (mode === 'SELL') params.append("productsAvailed", "SELL");
-            
             window.open(`${baseUrl}?${params.toString()}`, '_blank', 'width=450,height=600');
         }
 
@@ -167,20 +177,16 @@
         }
 
         function showKey() {
-            const check = prompt("Ketik 'SHOW' untuk melihat Private Key (Rahasia):");
-            if(check === 'SHOW') alert("PRIVATE KEY ANDA:\n" + wallet.privateKey + "\n\nSIMPAN DI KERTAS!");
+            const check = prompt("Ketik 'SHOW' untuk melihat Private Key:");
+            if(check === 'SHOW') alert("KUNCI RAHASIA:\n" + wallet.privateKey);
         }
 
-        // Jalankan saat load
         window.onload = initWallet;
-        
+
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(() => console.log("PWA Active!"))
-    .catch((err) => console.log("PWA Error", err));
+            navigator.serviceWorker.register('sw.js').catch(() => {});
         }
     </script>
-    
-    
 </body>
 </html>
